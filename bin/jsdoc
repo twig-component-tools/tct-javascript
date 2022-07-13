@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2046
+
+DIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+
+source "$DIR/../node_modules/.bin/echolorized"
+colored_output "$GREEN" "\n[CREATING JS DOC FILES]"
+
+jsdoc --configure .jsdoc.json
+
+e_success "Done.\n"

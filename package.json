@@ -1,0 +1,35 @@
+{
+  "name": "@twig-component-tools/tct-javascript",
+  "version": "0.1.0",
+  "description": "Vanilla JS Component Micro-Framework for the Twig Component Tools System.",
+  "main": "src/TCTComponent.js",
+  "author": "Barthy B. <post@barthy.koeln>",
+  "license": "MIT",
+  "private": false,
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "pre-commit": "bin/pre-commit"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18",
+    "@babel/eslint-parser": "^7.18",
+    "@babel/plugin-transform-runtime": "^7.18",
+    "@babel/preset-env": "^7.18",
+    "autobind-decorator": "^2.4",
+    "bash-echolorized": "^1.0",
+    "core-js": "^3.23",
+    "eslint": "^8.18",
+    "eslint-config-standard": "^17.0",
+    "eslint-plugin-import": "^2.26",
+    "eslint-plugin-n": "^15.2.3",
+    "eslint-plugin-node": "^11.1",
+    "eslint-plugin-promise": "^6.0",
+    "minami": "^1.2",
+    "pre-commit": "^1.2",
+    "taffydb": "^2.7"
+  },
+  "pre-commit": "pre-commit",
+  "dependencies": {}
+}

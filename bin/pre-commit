@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2046
+
+DIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+source "$DIR/../node_modules/.bin/echolorized"
+
+NODE="$DIR/../node_modules/.bin/"
+
+FRONTEND_DIRECTORIES="src"
+
+colored_output "$GREEN" "\n[EXECUTING PRE COMMIT HOOK]"
+e_info "USE ${YELLOW}git commit -n -m 'your message'${RESET} to bypass these checks."
+echo -e ''
+
+###---###
+e_info "Linting/Fixing JavaScript Code Style"
+
+# shellcheck disable=SC2086
+if ! "$NODE/eslint" --fix --quiet $(find $FRONTEND_DIRECTORIES -type f -name '*.js'); then
+  e_error "Error in JavaScript file. Run ${YELLOW}eslint${RESET} to check."
+  exit 1
+fi
+
+###---###
+e_success "All good, staging additional changes.\n"
+git update-index --again
