@@ -53,7 +53,12 @@ export class TCTComponent {
     const promise = this.mount()
 
     if (promise instanceof Promise) {
-      await promise
+      try {
+        await promise
+      } catch (error) {
+        console.error({ component: this, error })
+        throw new Error(`Could not mount component: ${this.constructor.name}`)
+      }
     }
 
     this.dispatch(`mounted-${this.constructor.name}`, this)
