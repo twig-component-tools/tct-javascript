@@ -17,7 +17,7 @@ export async function registerFromScriptTags (selector = 'script[data-component]
   const map = []
 
   if (!window.TCTComponents) {
-    return
+    window.TCTComponents = {}
   }
 
   for (const tag of scriptTags) {
