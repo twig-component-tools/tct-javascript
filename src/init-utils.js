@@ -1,8 +1,38 @@
 /**
  * @typedef {String} Selector
  * @typedef {Function} ComponentConstructor
- * @typedef {Array<[Selector, ComponentConstructor]>} ComponentMap
+ * @typedef {[Selector, ComponentConstructor]} ComponentEntry
+ * @typedef {Array<ComponentEntry>} ComponentMap
  */
+
+/**
+ * Get module from script tag when it loads.
+ *
+ * @param {HTMLScriptElement} tag
+ * @param {Selector} selector
+ * @param {String} componentName
+ * @return {Promise<ComponentEntry>}
+ */
+async function getModuleFromTag (tag, selector, componentName) {
+  const module = window.TCTComponents[componentName]
+
+  if (module) {
+    return [selector, module[componentName]]
+  }
+
+  return await new Promise((resolve, reject) => {
+    tag.onload = () => {
+      const module = window.TCTComponents[componentName]
+
+      if (module) {
+        resolve([selector, module[componentName]])
+        return
+      }
+
+      reject(new Error('Could not load component ' + componentName))
+    }
+  })
+}
 
 /**
  * This will parse all existing script tags that have a <code>data-component</code> attribute.
@@ -14,7 +44,7 @@
  */
 export async function registerFromScriptTags (selector = 'script[data-component]') {
   const scriptTags = document.querySelectorAll(selector)
-  const map = []
+  const promises = []
 
   if (!window.TCTComponents) {
     window.TCTComponents = {}
@@ -23,14 +53,10 @@ export async function registerFromScriptTags (selector = 'script[data-component]
   for (const tag of scriptTags) {
     const componentName = tag.dataset.component
     const selector = tag.dataset.selector || `.${componentName}`
-    const componentModule = window.TCTComponents[componentName]
-
-    if (componentModule.toString() === '[object Module]') {
-      map.push([selector, componentModule[componentName]])
-    }
+    promises.push(getModuleFromTag(tag, selector, componentName))
   }
 
-  registerComponents(map)
+  registerComponents(await Promise.all(promises))
 }
 
 /**
