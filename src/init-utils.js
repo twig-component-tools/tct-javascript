@@ -23,10 +23,10 @@ export async function registerFromScriptTags (selector = 'script[data-component]
   for (const tag of scriptTags) {
     const componentName = tag.dataset.component
     const selector = tag.dataset.selector || `.${componentName}`
-    const component = window.TCTComponents[componentName]
+    const componentModule = window.TCTComponents[componentName]
 
-    if (typeof component === 'function') {
-      map.push([selector, component])
+    if (componentModule.toString() === '[object Module]') {
+      map.push([selector, componentModule[componentName]])
     }
   }
 
