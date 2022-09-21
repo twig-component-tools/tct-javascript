@@ -21,6 +21,7 @@ export class TCTComponent {
    * @override
    *
    * Use this method to initialize your component's inner workings.
+   * @return void|Promise<>
    */
   mount () {
     throw new Error(`Method 'mount' of ${this.constructor.name} was not implemented.`)

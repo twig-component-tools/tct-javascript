@@ -16,12 +16,17 @@ export async function registerFromScriptTags (selector = 'script[data-component]
   const scriptTags = document.querySelectorAll(selector)
   const map = []
 
+  if (!window.TCTComponents) {
+    return
+  }
+
   for (const tag of scriptTags) {
     const componentName = tag.dataset.component
     const selector = tag.dataset.selector || `.${componentName}`
+    const component = window.TCTComponents[componentName]
 
-    if (window[componentName]) {
-      map.push([selector, window[componentName]])
+    if (typeof component === 'function') {
+      map.push([selector, component])
     }
   }
 
