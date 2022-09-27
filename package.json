@@ -1,6 +1,6 @@
 {
   "name": "@twig-component-tools/tct-javascript",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vanilla JS Component Micro-Framework for the Twig Component Tools System.",
   "main": "src/TCTComponent.js",
   "author": "Barthy B. <post@barthy.koeln>",
