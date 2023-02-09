@@ -57,8 +57,9 @@ export class TCTComponent {
       try {
         await promise
       } catch (error) {
-        console.error({ component: this, error })
-        throw new Error(`Could not mount component: ${this.constructor.name}`)
+        console.error(error)
+        console.debug({ component: this })
+        throw new Error(`Could not mount component: ${this.constructor.name} on ${this.container}`)
       }
     }
 
