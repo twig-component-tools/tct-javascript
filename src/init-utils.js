@@ -28,8 +28,8 @@ function registerComponent (selector, constructor) {
 
 function handleTagLoadedComponent (name, module) {
   const tag = document.querySelector(`script[data-component="${name}"]`)
-  const selector = tag.dataset.selector || `.${name}`
   const constructor = module[name]
+  const selector = constructor.prototype.selector || tag.dataset.selector || `.${name}`
 
   registerComponent(selector, constructor)
 
