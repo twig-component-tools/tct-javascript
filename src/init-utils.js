@@ -1,31 +1,68 @@
 /**
  * @typedef {String} Selector
  * @typedef {Function} ComponentConstructor
- * @typedef {Array<[Selector, ComponentConstructor]>} ComponentMap
+ * @typedef {[Selector, ComponentConstructor]} ComponentEntry
+ * @typedef {Array<ComponentEntry>} ComponentMap
  */
 
-/**
- * This will parse all existing script tags that have a <code>data-component</code> attribute.
- * Attribute values:
- * data-component: Component Constructor Name. Must exist on the "window" object.
- * data-selector: Selector used to find all occurrences of the component.
- *
- * @param {Selector} selector Selector used to find script tags.
- */
-export async function registerFromScriptTags (selector = 'script[data-component]') {
-  const scriptTags = document.querySelectorAll(selector)
-  const map = []
+import { mountComponent } from './component-utils'
 
-  for (const tag of scriptTags) {
-    const componentName = tag.dataset.component
-    const selector = tag.dataset.selector || `.${componentName}`
+function initComponentMap () {
+  if (!window.__tct) {
+    window.__tct = new Map()
+  }
+}
 
-    if (window[componentName]) {
-      map.push([selector, window[componentName]])
-    }
+function registerComponent (selector, constructor) {
+  if (!window.__tct.has(selector)) {
+    window.__tct.set(selector, [])
   }
 
-  registerComponents(map)
+  const componentList = window.__tct.get(selector)
+  if (componentList.includes(constructor)) {
+    return
+  }
+
+  componentList.push(constructor)
+}
+
+function handleTagLoadedComponent (name, module) {
+  const tag = document.querySelector(`script[data-component="${name}"]`)
+  const constructor = module[name]
+  const selector = constructor.prototype.selector || tag.dataset.selector || `.${name}`
+
+  registerComponent(selector, constructor)
+
+  const containers = document.querySelectorAll(selector)
+  for (const container of containers) {
+    mountComponent(container, constructor)
+  }
+}
+
+export function watchScriptTags () {
+  initComponentMap()
+
+  const existing = window.TCTComponents || {}
+  for (const [name, module] of Object.entries(existing)) {
+    if (!module) {
+      continue
+    }
+
+    handleTagLoadedComponent(name, module)
+  }
+
+  window.TCTComponents = new Proxy(existing, {
+    set (obj, name, module) {
+      if (!module[name]) {
+        return true
+      }
+
+      handleTagLoadedComponent(name, module)
+
+      obj[name] = module
+      return true
+    }
+  })
 }
 
 /**
@@ -35,20 +72,9 @@ export async function registerFromScriptTags (selector = 'script[data-component]
  * @param {ComponentMap} componentMap Map (Array of arrays) of selectors to constructors.
  */
 export function registerComponents (componentMap) {
-  if (!window.__tct) {
-    window.__tct = new Map()
-  }
+  initComponentMap()
 
   for (const [selector, constructor] of componentMap) {
-    if (!window.__tct.has(selector)) {
-      window.__tct.set(selector, [])
-    }
-
-    const componentList = window.__tct.get(selector)
-    if (componentList.includes(constructor)) {
-      continue
-    }
-
-    componentList.push(constructor)
+    registerComponent(selector, constructor)
   }
 }

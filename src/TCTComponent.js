@@ -21,6 +21,7 @@ export class TCTComponent {
    * @override
    *
    * Use this method to initialize your component's inner workings.
+   * @return void|Promise<>
    */
   mount () {
     throw new Error(`Method 'mount' of ${this.constructor.name} was not implemented.`)
@@ -56,8 +57,9 @@ export class TCTComponent {
       try {
         await promise
       } catch (error) {
-        console.error({ component: this, error })
-        throw new Error(`Could not mount component: ${this.constructor.name}`)
+        console.error(error)
+        console.debug({ component: this })
+        throw new Error(`Could not mount component: ${this.constructor.name} on ${this.container}`)
       }
     }
 
